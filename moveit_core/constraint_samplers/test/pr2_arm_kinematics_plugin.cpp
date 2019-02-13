@@ -338,7 +338,7 @@ bool PR2ArmKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose& ik_pose
     return false;
   }
   KDL::Frame pose_desired;
-  Eigen::Affine3d tp;
+  Eigen::Isometry3d tp;
   tf::poseMsgToEigen(ik_pose, tp);
   tf::transformEigenToKDL(tp, pose_desired);
 

@@ -1017,7 +1017,7 @@ bool TrajectoryExecutionManager::validate(const TrajectoryExecutionContext& cont
 
         // compute difference (offset vector and rotation angle) between current transform
         // and start transform in trajectory
-        Eigen::Affine3d cur_transform, start_transform;
+        Eigen::Isometry3d cur_transform, start_transform;
         jm->computeTransform(current_state->getJointPositions(jm), cur_transform);
         tf::transformMsgToEigen(transforms[i], start_transform);
         Eigen::Vector3d offset = cur_transform.translation() - start_transform.translation();

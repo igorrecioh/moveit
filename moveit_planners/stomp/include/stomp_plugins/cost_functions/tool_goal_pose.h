@@ -131,7 +131,7 @@ protected:
   moveit_msgs::MotionPlanRequest plan_request_;
 
   // goal pose
-  Eigen::Affine3d tool_goal_pose_; /**< @brief The desired goal pose for the active plan request **/
+  Eigen::Isometry3d tool_goal_pose_; /**< @brief The desired goal pose for the active plan request **/
 
   // ros parameters
   Eigen::ArrayXi dof_nullity_; /**< @brief Indicates which cartesian DOF's are unconstrained (0) and fully constrained
@@ -144,7 +144,7 @@ protected:
 
   // support variables
   Eigen::VectorXd last_joint_pose_;
-  Eigen::Affine3d last_tool_pose_;
+  Eigen::Isometry3d last_tool_pose_;
   Eigen::VectorXd tool_twist_error_;
 };
 

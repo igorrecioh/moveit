@@ -92,7 +92,7 @@ void TransformProvider::setFrame(const string& frame)
   }
 }
 
-bool TransformProvider::getTransform(MeshHandle handle, Affine3d& transform) const
+bool TransformProvider::getTransform(MeshHandle handle, Isometry3d& transform) const
 {
   map<MeshHandle, shared_ptr<TransformContext> >::const_iterator contextIt = handle2context_.find(handle);
 
@@ -126,7 +126,7 @@ void TransformProvider::setUpdateInterval(unsigned long usecs)
 
 void TransformProvider::updateTransforms()
 {
-  static Affine3d transformation;
+  static Isometry3d transformation;
   static robot_state::RobotStatePtr robot_state;
   robot_state = psm_->getStateMonitor()->getCurrentState();
 

@@ -282,7 +282,7 @@ bool GoalGuidedMultivariateGaussian::generateRandomGoal(const Eigen::VectorXd& s
   // applying noise onto tool pose
   state_->setJointGroupPositions(group_, seed_joint_pose);
   state_->updateLinkTransforms();
-  Affine3d tool_pose = state_->getGlobalLinkTransform(tool_link_);
+  Isometry3d tool_pose = state_->getGlobalLinkTransform(tool_link_);
   auto& n = noise;
   kc_.tool_goal_pose = tool_pose * Translation3d(Vector3d(n(0), n(1), n(2))) * AngleAxisd(n(3), Vector3d::UnitX()) *
                        AngleAxisd(n(4), Vector3d::UnitY()) * AngleAxisd(n(5), Vector3d::UnitZ());

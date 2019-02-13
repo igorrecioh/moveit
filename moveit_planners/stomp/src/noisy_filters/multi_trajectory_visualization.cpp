@@ -219,7 +219,7 @@ bool MultiTrajectoryVisualization::filter(std::size_t start_timestep, std::size_
   for (auto t = 0u; t < parameters.cols(); t++)
   {
     state_->setJointGroupPositions(joint_group, parameters.col(t));
-    Eigen::Affine3d tool_pos = state_->getFrameTransform(tool_link);
+    Eigen::Isometry3d tool_pos = state_->getFrameTransform(tool_link);
     tool_traj_line_(0, t) = tool_pos.translation()(0);
     tool_traj_line_(1, t) = tool_pos.translation()(1);
     tool_traj_line_(2, t) = tool_pos.translation()(2);

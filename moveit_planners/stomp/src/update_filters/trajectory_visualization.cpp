@@ -68,7 +68,7 @@ static Eigen::MatrixXd jointsToToolPath(RobotState& state, const std::string& gr
   for (auto t = 0u; t < parameters.cols(); t++)
   {
     state.setJointGroupPositions(joint_group, parameters.col(t));
-    Eigen::Affine3d tool_pos = state.getFrameTransform(tool_link);
+    Eigen::Isometry3d tool_pos = state.getFrameTransform(tool_link);
     tool_traj(0, t) = tool_pos.translation()(0);
     tool_traj(1, t) = tool_pos.translation()(1);
     tool_traj(2, t) = tool_pos.translation()(2);

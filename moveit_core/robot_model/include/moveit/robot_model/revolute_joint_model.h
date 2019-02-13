@@ -64,8 +64,8 @@ public:
   virtual double getMaximumExtent(const Bounds& other_bounds) const;
   virtual double distance(const double* values1, const double* values2) const;
 
-  virtual void computeTransform(const double* joint_values, Eigen::Affine3d& transf) const;
-  virtual void computeVariablePositions(const Eigen::Affine3d& transf, double* joint_values) const;
+  virtual void computeTransform(const double* joint_values, Eigen::Isometry3d& transf) const;
+  virtual void computeVariablePositions(const Eigen::Isometry3d& transf, double* joint_values) const;
 
   void setContinuous(bool flag);
 

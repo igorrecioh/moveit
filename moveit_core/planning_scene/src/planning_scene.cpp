@@ -77,7 +77,7 @@ public:
       return knowsObject(frame);
   }
 
-  const Eigen::Affine3d& getTransform(const std::string& from_frame) const override
+  const Eigen::Isometry3d& getTransform(const std::string& from_frame) const override
   {  // the call below also calls Transforms::getTransform() too
     return scene_->getFrameTransform(from_frame);
   }
@@ -1035,10 +1035,10 @@ void PlanningScene::saveGeometryToStream(std::ostream& out) const
 
 void PlanningScene::loadGeometryFromStream(std::istream& in)
 {
-  loadGeometryFromStream(in, Eigen::Affine3d::Identity());  // Use no offset
+  loadGeometryFromStream(in, Eigen::Isometry3d::Identity());  // Use no offset
 }
 
-void PlanningScene::loadGeometryFromStream(std::istream& in, const Eigen::Affine3d& offset)
+void PlanningScene::loadGeometryFromStream(std::istream& in, const Eigen::Isometry3d& offset)
 {
   if (!in.good() || in.eof())
     return;
@@ -1068,7 +1068,7 @@ void PlanningScene::loadGeometryFromStream(std::istream& in, const Eigen::Affine
         in >> r >> g >> b >> a;
         if (s)
         {
-          Eigen::Affine3d pose = Eigen::Translation3d(x, y, z) * Eigen::Quaterniond(rw, rx, ry, rz);
+          Eigen::Isometry3d pose = Eigen::Translation3d(x, y, z) * Eigen::Quaterniond(rw, rx, ry, rz);
           // Transform pose by input pose offset
           pose = offset * pose;
           world_->addToObject(ns, shapes::ShapePtr(s), pose);
@@ -1323,12 +1323,12 @@ void PlanningScene::processOctomapMsg(const octomap_msgs::Octomap& map)
   std::shared_ptr<octomap::OcTree> om(static_cast<octomap::OcTree*>(octomap_msgs::msgToMap(map)));
   if (!map.header.frame_id.empty())
   {
-    const Eigen::Affine3d& t = getTransforms().getTransform(map.header.frame_id);
+    const Eigen::Isometry3d& t = getTransforms().getTransform(map.header.frame_id);
     world_->addToObject(OCTOMAP_NS, shapes::ShapeConstPtr(new shapes::OcTree(om)), t);
   }
   else
   {
-    world_->addToObject(OCTOMAP_NS, shapes::ShapeConstPtr(new shapes::OcTree(om)), Eigen::Affine3d::Identity());
+    world_->addToObject(OCTOMAP_NS, shapes::ShapeConstPtr(new shapes::OcTree(om)), Eigen::Isometry3d::Identity());
   }
 }
 
@@ -1360,14 +1360,14 @@ void PlanningScene::processOctomapMsg(const octomap_msgs::OctomapWithPose& map)
   }
 
   std::shared_ptr<octomap::OcTree> om(static_cast<octomap::OcTree*>(octomap_msgs::msgToMap(map.octomap)));
-  const Eigen::Affine3d& t = getTransforms().getTransform(map.header.frame_id);
-  Eigen::Affine3d p;
+  const Eigen::Isometry3d& t = getTransforms().getTransform(map.header.frame_id);
+  Eigen::Isometry3d p;
   tf::poseMsgToEigen(map.origin, p);
   p = t * p;
   world_->addToObject(OCTOMAP_NS, shapes::ShapeConstPtr(new shapes::OcTree(om)), p);
 }
 
-void PlanningScene::processOctomapPtr(const std::shared_ptr<const octomap::OcTree>& octree, const Eigen::Affine3d& t)
+void PlanningScene::processOctomapPtr(const std::shared_ptr<const octomap::OcTree>& octree, const Eigen::Isometry3d& t)
 {
   collision_detection::CollisionWorld::ObjectConstPtr map = world_->getObject(OCTOMAP_NS);
   if (map)
@@ -1451,7 +1451,7 @@ bool PlanningScene::processAttachedCollisionObjectMsg(const moveit_msgs::Attache
     if (lm)
     {
       std::vector<shapes::ShapeConstPtr> shapes;
-      EigenSTL::vector_Affine3d poses;
+      EigenSTL::vector_Isometry3d poses;
 
       // we need to add some shapes; if the message is empty, maybe the object is already in the world
       if (object.object.operation == moveit_msgs::CollisionObject::ADD && object.object.primitives.empty() &&
@@ -1470,7 +1470,7 @@ bool PlanningScene::processAttachedCollisionObjectMsg(const moveit_msgs::Attache
           world_->removeObject(object.object.id);
 
           // need to transform poses to the link frame
-          const Eigen::Affine3d& i_t = kstate_->getGlobalLinkTransform(lm).inverse();
+          const Eigen::Isometry3d& i_t = kstate_->getGlobalLinkTransform(lm).inverse();
           for (std::size_t i = 0; i < poses.size(); ++i)
             poses[i] = i_t * poses[i];
         }
@@ -1502,7 +1502,7 @@ bool PlanningScene::processAttachedCollisionObjectMsg(const moveit_msgs::Attache
           shapes::Shape* s = shapes::constructShapeFromMsg(object.object.primitives[i]);
           if (s)
           {
-            Eigen::Affine3d p;
+            Eigen::Isometry3d p;
             tf::poseMsgToEigen(object.object.primitive_poses[i], p);
             shapes.push_back(shapes::ShapeConstPtr(s));
             poses.push_back(p);
@@ -1513,7 +1513,7 @@ bool PlanningScene::processAttachedCollisionObjectMsg(const moveit_msgs::Attache
           shapes::Shape* s = shapes::constructShapeFromMsg(object.object.meshes[i]);
           if (s)
           {
-            Eigen::Affine3d p;
+            Eigen::Isometry3d p;
             tf::poseMsgToEigen(object.object.mesh_poses[i], p);
             shapes.push_back(shapes::ShapeConstPtr(s));
             poses.push_back(p);
@@ -1524,7 +1524,7 @@ bool PlanningScene::processAttachedCollisionObjectMsg(const moveit_msgs::Attache
           shapes::Shape* s = shapes::constructShapeFromMsg(object.object.planes[i]);
           if (s)
           {
-            Eigen::Affine3d p;
+            Eigen::Isometry3d p;
             tf::poseMsgToEigen(object.object.plane_poses[i], p);
             shapes.push_back(shapes::ShapeConstPtr(s));
             poses.push_back(p);
@@ -1534,7 +1534,7 @@ bool PlanningScene::processAttachedCollisionObjectMsg(const moveit_msgs::Attache
         // transform poses to link frame
         if (object.object.header.frame_id != object.link_name)
         {
-          const Eigen::Affine3d& t = kstate_->getGlobalLinkTransform(lm).inverse() *
+          const Eigen::Isometry3d& t = kstate_->getGlobalLinkTransform(lm).inverse() *
                                      getTransforms().getTransform(object.object.header.frame_id);
           for (std::size_t i = 0; i < poses.size(); ++i)
             poses[i] = t * poses[i];
@@ -1621,7 +1621,7 @@ bool PlanningScene::processAttachedCollisionObjectMsg(const moveit_msgs::Attache
     for (std::size_t i = 0; i < attached_bodies.size(); ++i)
     {
       std::vector<shapes::ShapeConstPtr> shapes = attached_bodies[i]->getShapes();
-      EigenSTL::vector_Affine3d poses = attached_bodies[i]->getGlobalCollisionBodyTransforms();
+      EigenSTL::vector_Isometry3d poses = attached_bodies[i]->getGlobalCollisionBodyTransforms();
       std::string name = attached_bodies[i]->getName();
 
       kstate_->clearAttachedBody(name);
@@ -1694,14 +1694,14 @@ bool PlanningScene::processCollisionObjectMsg(const moveit_msgs::CollisionObject
     if (object.operation == moveit_msgs::CollisionObject::ADD && world_->hasObject(object.id))
       world_->removeObject(object.id);
 
-    const Eigen::Affine3d& t = getTransforms().getTransform(object.header.frame_id);
+    const Eigen::Isometry3d& t = getTransforms().getTransform(object.header.frame_id);
 
     for (std::size_t i = 0; i < object.primitives.size(); ++i)
     {
       shapes::Shape* s = shapes::constructShapeFromMsg(object.primitives[i]);
       if (s)
       {
-        Eigen::Affine3d p;
+        Eigen::Isometry3d p;
         tf::poseMsgToEigen(object.primitive_poses[i], p);
         world_->addToObject(object.id, shapes::ShapeConstPtr(s), t * p);
       }
@@ -1711,7 +1711,7 @@ bool PlanningScene::processCollisionObjectMsg(const moveit_msgs::CollisionObject
       shapes::Shape* s = shapes::constructShapeFromMsg(object.meshes[i]);
       if (s)
       {
-        Eigen::Affine3d p;
+        Eigen::Isometry3d p;
         tf::poseMsgToEigen(object.mesh_poses[i], p);
         world_->addToObject(object.id, shapes::ShapeConstPtr(s), t * p);
       }
@@ -1721,7 +1721,7 @@ bool PlanningScene::processCollisionObjectMsg(const moveit_msgs::CollisionObject
       shapes::Shape* s = shapes::constructShapeFromMsg(object.planes[i]);
       if (s)
       {
-        Eigen::Affine3d p;
+        Eigen::Isometry3d p;
         tf::poseMsgToEigen(object.plane_poses[i], p);
         world_->addToObject(object.id, shapes::ShapeConstPtr(s), t * p);
       }
@@ -1753,23 +1753,23 @@ bool PlanningScene::processCollisionObjectMsg(const moveit_msgs::CollisionObject
                        "Move operation for object '%s' ignores the geometry specified in the message.",
                        object.id.c_str());
 
-      const Eigen::Affine3d& t = getTransforms().getTransform(object.header.frame_id);
-      EigenSTL::vector_Affine3d new_poses;
+      const Eigen::Isometry3d& t = getTransforms().getTransform(object.header.frame_id);
+      EigenSTL::vector_Isometry3d new_poses;
       for (std::size_t i = 0; i < object.primitive_poses.size(); ++i)
       {
-        Eigen::Affine3d p;
+        Eigen::Isometry3d p;
         tf::poseMsgToEigen(object.primitive_poses[i], p);
         new_poses.push_back(t * p);
       }
       for (std::size_t i = 0; i < object.mesh_poses.size(); ++i)
       {
-        Eigen::Affine3d p;
+        Eigen::Isometry3d p;
         tf::poseMsgToEigen(object.mesh_poses[i], p);
         new_poses.push_back(t * p);
       }
       for (std::size_t i = 0; i < object.plane_poses.size(); ++i)
       {
-        Eigen::Affine3d p;
+        Eigen::Isometry3d p;
         tf::poseMsgToEigen(object.plane_poses[i], p);
         new_poses.push_back(t * p);
       }
@@ -1800,12 +1800,12 @@ bool PlanningScene::processCollisionObjectMsg(const moveit_msgs::CollisionObject
   return false;
 }
 
-const Eigen::Affine3d& PlanningScene::getFrameTransform(const std::string& id) const
+const Eigen::Isometry3d& PlanningScene::getFrameTransform(const std::string& id) const
 {
   return getFrameTransform(getCurrentState(), id);
 }
 
-const Eigen::Affine3d& PlanningScene::getFrameTransform(const std::string& id)
+const Eigen::Isometry3d& PlanningScene::getFrameTransform(const std::string& id)
 {
   if (getCurrentState().dirtyLinkTransforms())
     return getFrameTransform(getCurrentStateNonConst(), id);
@@ -1813,7 +1813,7 @@ const Eigen::Affine3d& PlanningScene::getFrameTransform(const std::string& id)
     return getFrameTransform(getCurrentState(), id);
 }
 
-const Eigen::Affine3d& PlanningScene::getFrameTransform(const robot_state::RobotState& state,
+const Eigen::Isometry3d& PlanningScene::getFrameTransform(const robot_state::RobotState& state,
                                                         const std::string& id) const
 {
   if (!id.empty() && id[0] == '/')

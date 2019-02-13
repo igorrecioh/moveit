@@ -459,7 +459,7 @@ void planning_scene_monitor::CurrentStateMonitor::tfCallback()
       }
       joint_time_[joint] = latest_common_time;
 
-      Eigen::Affine3d eigen_transf;
+      Eigen::Isometry3d eigen_transf;
       tf::transformTFToEigen(transf, eigen_transf);
 
       double new_values[joint->getStateSpaceDimension()];

@@ -57,7 +57,7 @@ Transforms::Transforms(const std::string& target_frame) : target_frame_(target_f
                      target_frame_.c_str(), target_frame_.c_str());
       target_frame_ = '/' + target_frame_;
     }
-    transforms_[target_frame_] = Eigen::Affine3d::Identity();
+    transforms_[target_frame_] = Eigen::Isometry3d::Identity();
   }
 }
 
@@ -97,7 +97,7 @@ bool Transforms::isFixedFrame(const std::string& frame) const
     return (frame[0] == '/' ? transforms_.find(frame) : transforms_.find('/' + frame)) != transforms_.end();
 }
 
-const Eigen::Affine3d& Transforms::getTransform(const std::string& from_frame) const
+const Eigen::Isometry3d& Transforms::getTransform(const std::string& from_frame) const
 {
   if (!from_frame.empty())
   {
@@ -111,7 +111,7 @@ const Eigen::Affine3d& Transforms::getTransform(const std::string& from_frame) c
                   from_frame.c_str(), target_frame_.c_str());
 
   // return identity
-  static const Eigen::Affine3d identity = Eigen::Affine3d::Identity();
+  static const Eigen::Isometry3d identity = Eigen::Isometry3d::Identity();
   return identity;
 }
 
@@ -124,7 +124,7 @@ bool Transforms::canTransform(const std::string& from_frame) const
            transforms_.end();
 }
 
-void Transforms::setTransform(const Eigen::Affine3d& t, const std::string& from_frame)
+void Transforms::setTransform(const Eigen::Isometry3d& t, const std::string& from_frame)
 {
   if (from_frame.empty())
     ROS_ERROR_NAMED("transforms", "Cannot record transform with empty name");
@@ -145,7 +145,7 @@ void Transforms::setTransform(const geometry_msgs::TransformStamped& transform)
 {
   if (sameFrame(transform.child_frame_id, target_frame_))
   {
-    Eigen::Affine3d t;
+    Eigen::Isometry3d t;
     tf::transformMsgToEigen(transform.transform, t);
     setTransform(t, transform.header.frame_id);
   }

@@ -995,7 +995,7 @@ bool planning_scene_monitor::PlanningSceneMonitor::getShapeTransformCache(
       tf::StampedTransform tr;
       tf_->waitForTransform(target_frame, it->first->getName(), target_time, shape_transform_cache_lookup_wait_time_);
       tf_->lookupTransform(target_frame, it->first->getName(), target_time, tr);
-      Eigen::Affine3d ttr;
+      Eigen::Isometry3d ttr;
       tf::transformTFToEigen(tr, ttr);
       for (std::size_t j = 0; j < it->second.size(); ++j)
         cache[it->second[j].first] = ttr * it->first->getCollisionOriginTransforms()[it->second[j].second];
@@ -1007,7 +1007,7 @@ bool planning_scene_monitor::PlanningSceneMonitor::getShapeTransformCache(
       tf_->waitForTransform(target_frame, it->first->getAttachedLinkName(), target_time,
                             shape_transform_cache_lookup_wait_time_);
       tf_->lookupTransform(target_frame, it->first->getAttachedLinkName(), target_time, tr);
-      Eigen::Affine3d transform;
+      Eigen::Isometry3d transform;
       tf::transformTFToEigen(tr, transform);
       for (std::size_t k = 0; k < it->second.size(); ++k)
         cache[it->second[k].first] = transform * it->first->getFixedTransforms()[it->second[k].second];
@@ -1017,7 +1017,7 @@ bool planning_scene_monitor::PlanningSceneMonitor::getShapeTransformCache(
       tf_->waitForTransform(target_frame, scene_->getPlanningFrame(), target_time,
                             shape_transform_cache_lookup_wait_time_);
       tf_->lookupTransform(target_frame, scene_->getPlanningFrame(), target_time, tr);
-      Eigen::Affine3d transform;
+      Eigen::Isometry3d transform;
       tf::transformTFToEigen(tr, transform);
       for (CollisionBodyShapeHandles::const_iterator it = collision_body_shape_handles_.begin();
            it != collision_body_shape_handles_.end(); ++it)
@@ -1222,7 +1222,7 @@ void planning_scene_monitor::PlanningSceneMonitor::octomapUpdateCallback()
     octomap_monitor_->getOcTreePtr()->lockRead();
     try
     {
-      scene_->processOctomapPtr(octomap_monitor_->getOcTreePtr(), Eigen::Affine3d::Identity());
+      scene_->processOctomapPtr(octomap_monitor_->getOcTreePtr(), Eigen::Isometry3d::Identity());
       octomap_monitor_->getOcTreePtr()->unlockRead();
     }
     catch (...)

@@ -61,7 +61,7 @@ struct KinematicConfig
   Eigen::Array<int, 6, 1> constrained_dofs =
       Eigen::Array<int, 6, 1>::Ones(); /**< @brief  A vector of the form [x y z rx ry rz] filled with 0's and 1's
                                                    to indicate an unconstrained or fully constrained DOF. **/
-  Eigen::Affine3d tool_goal_pose = Eigen::Affine3d::Identity(); /**< @brief  The desired tool pose. **/
+  Eigen::Isometry3d tool_goal_pose = Eigen::Isometry3d::Identity(); /**< @brief  The desired tool pose. **/
 
   /** @name Support Parameters
    * Used at each iteration until a solution is found
@@ -194,7 +194,7 @@ static bool createKinematicConfig(const moveit::core::JointModelGroup* group, co
  * @param nullity   array of 0's and 1's indicating which cartesian DOF's are unconstrained (0)
  * @param twist     the twist vector in tool coordinates (change from p0 to pf) [6 x 1].
  */
-static void computeTwist(const Eigen::Affine3d& p0, const Eigen::Affine3d& pf, const Eigen::ArrayXi& nullity,
+static void computeTwist(const Eigen::Isometry3d& p0, const Eigen::Isometry3d& pf, const Eigen::ArrayXi& nullity,
                          Eigen::VectorXd& twist)
 {
   twist.resize(nullity.size());
@@ -202,7 +202,7 @@ static void computeTwist(const Eigen::Affine3d& p0, const Eigen::Affine3d& pf, c
 
   // relative transform
   auto p0_inv = p0.inverse();
-  Eigen::Affine3d t = (p0_inv)*pf;
+  Eigen::Isometry3d t = (p0_inv)*pf;
 
   Eigen::Vector3d twist_pos = p0_inv.rotation() * (pf.translation() - p0.translation());
 
@@ -311,7 +311,7 @@ static bool solveIK(moveit::core::RobotStatePtr robot_state, const std::string& 
                     const Eigen::Array<int, 6, 1>& constrained_dofs, const Eigen::ArrayXd& joint_update_rates,
                     const Eigen::Array<double, 6, 1>& cartesian_convergence_thresholds,
                     const Eigen::ArrayXd& null_proj_weights, const Eigen::VectorXd& null_space_vector,
-                    int max_iterations, const Eigen::Affine3d& tool_goal_pose, const Eigen::VectorXd& init_joint_pose,
+                    int max_iterations, const Eigen::Isometry3d& tool_goal_pose, const Eigen::VectorXd& init_joint_pose,
                     Eigen::VectorXd& joint_pose)
 {
   using namespace Eigen;
@@ -324,7 +324,7 @@ static bool solveIK(moveit::core::RobotStatePtr robot_state, const std::string& 
   robot_state->setJointGroupPositions(joint_group, joint_pose);
   const auto& joint_names = joint_group->getActiveJointModelNames();
   std::string tool_link = joint_group->getLinkModelNames().back();
-  Affine3d tool_current_pose = robot_state->getGlobalLinkTransform(tool_link);
+  Isometry3d tool_current_pose = robot_state->getGlobalLinkTransform(tool_link);
 
   auto harmonize_joints = [&joint_group, &joint_names](Eigen::VectorXd& joint_vals) -> bool {
     if (joint_names.size() != joint_vals.size())
@@ -499,7 +499,7 @@ static bool computeJacobianNullSpace(moveit::core::RobotStatePtr state, std::str
   // robot state
   const JointModelGroup* joint_group = state->getJointModelGroup(group);
   state->setJointGroupPositions(joint_group, joint_pose);
-  Affine3d tool_pose = state->getGlobalLinkTransform(tool_link);
+  Isometry3d tool_pose = state->getGlobalLinkTransform(tool_link);
 
   // jacobian calculations
   static MatrixXd jacb_transform(6, 6);
@@ -560,7 +560,7 @@ static bool computeJacobianNullSpace(moveit::core::RobotStatePtr state, std::str
 static bool solveIK(moveit::core::RobotStatePtr robot_state, const std::string& group_name,
                     const Eigen::ArrayXi& constrained_dofs, const Eigen::ArrayXd& joint_update_rates,
                     const Eigen::ArrayXd& cartesian_convergence_thresholds, int max_iterations,
-                    const Eigen::Affine3d& tool_goal_pose, const Eigen::VectorXd& init_joint_pose,
+                    const Eigen::Isometry3d& tool_goal_pose, const Eigen::VectorXd& init_joint_pose,
                     Eigen::VectorXd& joint_pose)
 {
   using namespace Eigen;

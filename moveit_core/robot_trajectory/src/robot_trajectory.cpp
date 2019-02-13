@@ -378,7 +378,7 @@ void RobotTrajectory::setRobotTrajectoryMsg(const robot_state::RobotState& refer
     {
       for (std::size_t j = 0; j < trajectory.multi_dof_joint_trajectory.joint_names.size(); ++j)
       {
-        Eigen::Affine3d t;
+        Eigen::Isometry3d t;
         tf::transformMsgToEigen(trajectory.multi_dof_joint_trajectory.points[i].transforms[j], t);
         st->setJointPositions(trajectory.multi_dof_joint_trajectory.joint_names[j], t);
       }

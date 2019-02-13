@@ -147,12 +147,12 @@ TEST_F(FclCollisionDetectionTester, LinksInCollision)
   kstate.setToDefaultValues();
   kstate.update();
 
-  Eigen::Affine3d offset = Eigen::Affine3d::Identity();
+  Eigen::Isometry3d offset = Eigen::Isometry3d::Identity();
   offset.translation().x() = .01;
 
-  //  kstate.getLinkState("base_link")->updateGivenGlobalLinkTransform(Eigen::Affine3d::Identity());
+  //  kstate.getLinkState("base_link")->updateGivenGlobalLinkTransform(Eigen::Isometry3d::Identity());
   //  kstate.getLinkState("base_bellow_link")->updateGivenGlobalLinkTransform(offset);
-  kstate.updateStateWithLinkAt("base_link", Eigen::Affine3d::Identity());
+  kstate.updateStateWithLinkAt("base_link", Eigen::Isometry3d::Identity());
   kstate.updateStateWithLinkAt("base_bellow_link", offset);
   kstate.update();
 
@@ -165,9 +165,9 @@ TEST_F(FclCollisionDetectionTester, LinksInCollision)
   ASSERT_FALSE(res2.collision);
 
   //  req.verbose = true;
-  //  kstate.getLinkState("r_gripper_palm_link")->updateGivenGlobalLinkTransform(Eigen::Affine3d::Identity());
+  //  kstate.getLinkState("r_gripper_palm_link")->updateGivenGlobalLinkTransform(Eigen::Isometry3d::Identity());
   //  kstate.getLinkState("l_gripper_palm_link")->updateGivenGlobalLinkTransform(offset);
-  kstate.updateStateWithLinkAt("r_gripper_palm_link", Eigen::Affine3d::Identity());
+  kstate.updateStateWithLinkAt("r_gripper_palm_link", Eigen::Isometry3d::Identity());
   kstate.updateStateWithLinkAt("l_gripper_palm_link", offset);
   kstate.update();
 
@@ -186,17 +186,17 @@ TEST_F(FclCollisionDetectionTester, ContactReporting)
   kstate.setToDefaultValues();
   kstate.update();
 
-  Eigen::Affine3d offset = Eigen::Affine3d::Identity();
+  Eigen::Isometry3d offset = Eigen::Isometry3d::Identity();
   offset.translation().x() = .01;
 
-  //  kstate.getLinkState("base_link")->updateGivenGlobalLinkTransform(Eigen::Affine3d::Identity());
+  //  kstate.getLinkState("base_link")->updateGivenGlobalLinkTransform(Eigen::Isometry3d::Identity());
   //  kstate.getLinkState("base_bellow_link")->updateGivenGlobalLinkTransform(offset);
-  //  kstate.getLinkState("r_gripper_palm_link")->updateGivenGlobalLinkTransform(Eigen::Affine3d::Identity());
+  //  kstate.getLinkState("r_gripper_palm_link")->updateGivenGlobalLinkTransform(Eigen::Isometry3d::Identity());
   //  kstate.getLinkState("l_gripper_palm_link")->updateGivenGlobalLinkTransform(offset);
 
-  kstate.updateStateWithLinkAt("base_link", Eigen::Affine3d::Identity());
+  kstate.updateStateWithLinkAt("base_link", Eigen::Isometry3d::Identity());
   kstate.updateStateWithLinkAt("base_bellow_link", offset);
-  kstate.updateStateWithLinkAt("r_gripper_palm_link", Eigen::Affine3d::Identity());
+  kstate.updateStateWithLinkAt("r_gripper_palm_link", Eigen::Isometry3d::Identity());
   kstate.updateStateWithLinkAt("l_gripper_palm_link", offset);
   kstate.update();
 
@@ -240,8 +240,8 @@ TEST_F(FclCollisionDetectionTester, ContactPositions)
   kstate.setToDefaultValues();
   kstate.update();
 
-  Eigen::Affine3d pos1 = Eigen::Affine3d::Identity();
-  Eigen::Affine3d pos2 = Eigen::Affine3d::Identity();
+  Eigen::Isometry3d pos1 = Eigen::Isometry3d::Identity();
+  Eigen::Isometry3d pos2 = Eigen::Isometry3d::Identity();
 
   pos1.translation().x() = 5.0;
   pos2.translation().x() = 5.01;
@@ -266,8 +266,8 @@ TEST_F(FclCollisionDetectionTester, ContactPositions)
     EXPECT_NEAR(it->second[0].pos.x(), 5.0, .33);
   }
 
-  pos1 = Eigen::Affine3d(Eigen::Translation3d(3.0, 0.0, 0.0) * Eigen::Quaterniond::Identity());
-  pos2 = Eigen::Affine3d(Eigen::Translation3d(3.0, 0.0, 0.0) * Eigen::Quaterniond(0.965, 0.0, 0.258, 0.0));
+  pos1 = Eigen::Isometry3d(Eigen::Translation3d(3.0, 0.0, 0.0) * Eigen::Quaterniond::Identity());
+  pos2 = Eigen::Isometry3d(Eigen::Translation3d(3.0, 0.0, 0.0) * Eigen::Quaterniond(0.965, 0.0, 0.258, 0.0));
   //  kstate.getLinkState("r_gripper_palm_link")->updateGivenGlobalLinkTransform(pos1);
   //  kstate.getLinkState("l_gripper_palm_link")->updateGivenGlobalLinkTransform(pos2);
   kstate.updateStateWithLinkAt("r_gripper_palm_link", pos1);
@@ -286,8 +286,8 @@ TEST_F(FclCollisionDetectionTester, ContactPositions)
     EXPECT_NEAR(it->second[0].pos.x(), 3.0, 0.33);
   }
 
-  pos1 = Eigen::Affine3d(Eigen::Translation3d(3.0, 0.0, 0.0) * Eigen::Quaterniond::Identity());
-  pos2 = Eigen::Affine3d(Eigen::Translation3d(3.0, 0.0, 0.0) * Eigen::Quaterniond(M_PI / 4.0, 0.0, M_PI / 4.0, 0.0));
+  pos1 = Eigen::Isometry3d(Eigen::Translation3d(3.0, 0.0, 0.0) * Eigen::Quaterniond::Identity());
+  pos2 = Eigen::Isometry3d(Eigen::Translation3d(3.0, 0.0, 0.0) * Eigen::Quaterniond(M_PI / 4.0, 0.0, M_PI / 4.0, 0.0));
   //  kstate.getLinkState("r_gripper_palm_link")->updateGivenGlobalLinkTransform(pos1);
   //  kstate.getLinkState("l_gripper_palm_link")->updateGivenGlobalLinkTransform(pos2);
   kstate.updateStateWithLinkAt("r_gripper_palm_link", pos1);
@@ -310,7 +310,7 @@ TEST_F(FclCollisionDetectionTester, AttachedBodyTester)
   kstate.setToDefaultValues();
   kstate.update();
 
-  Eigen::Affine3d pos1 = Eigen::Affine3d::Identity();
+  Eigen::Isometry3d pos1 = Eigen::Isometry3d::Identity();
   pos1.translation().x() = 5.0;
 
   //  kstate.getLinkState("r_gripper_palm_link")->updateGivenGlobalLinkTransform(pos1);
@@ -331,9 +331,9 @@ TEST_F(FclCollisionDetectionTester, AttachedBodyTester)
 
   shape = new shapes::Box(.1, .1, .1);
   std::vector<shapes::ShapeConstPtr> shapes;
-  EigenSTL::vector_Affine3d poses;
+  EigenSTL::vector_Isometry3d poses;
   shapes.push_back(shapes::ShapeConstPtr(shape));
-  poses.push_back(Eigen::Affine3d::Identity());
+  poses.push_back(Eigen::Isometry3d::Identity());
   std::vector<std::string> touch_links;
   kstate.attachBody("box", shapes, poses, touch_links, "r_gripper_palm_link");
 
@@ -393,8 +393,8 @@ TEST_F(FclCollisionDetectionTester, DiffSceneTester)
 
   shapes[0].reset(shapes::createMeshFromResource(kinect_dae_resource_));
 
-  EigenSTL::vector_Affine3d poses;
-  poses.push_back(Eigen::Affine3d::Identity());
+  EigenSTL::vector_Isometry3d poses;
+  poses.push_back(Eigen::Isometry3d::Identity());
 
   std::vector<std::string> touch_links;
   kstate.attachBody("kinect", shapes, poses, touch_links, "r_gripper_palm_link");
@@ -427,8 +427,8 @@ TEST_F(FclCollisionDetectionTester, ConvertObjectToAttached)
   collision_detection::CollisionResult res;
 
   shapes::ShapeConstPtr shape(shapes::createMeshFromResource(kinect_dae_resource_));
-  Eigen::Affine3d pos1 = Eigen::Affine3d::Identity();
-  Eigen::Affine3d pos2 = Eigen::Affine3d::Identity();
+  Eigen::Isometry3d pos1 = Eigen::Isometry3d::Identity();
+  Eigen::Isometry3d pos2 = Eigen::Isometry3d::Identity();
   pos2.translation().x() = 10.0;
 
   cworld_->getWorld()->addToObject("kinect", shape, pos1);
@@ -459,7 +459,7 @@ TEST_F(FclCollisionDetectionTester, ConvertObjectToAttached)
   std::vector<std::string> touch_links;
   kstate1.attachBody("kinect", object->shapes_, object->shape_poses_, touch_links, "r_gripper_palm_link");
 
-  EigenSTL::vector_Affine3d other_poses;
+  EigenSTL::vector_Isometry3d other_poses;
   other_poses.push_back(pos2);
 
   // This creates a new set of constant properties for the attached body, which happens to be the same as the one above;
@@ -486,11 +486,11 @@ TEST_F(FclCollisionDetectionTester, ConvertObjectToAttached)
 
 TEST_F(FclCollisionDetectionTester, TestCollisionMapAdditionSpeed)
 {
-  EigenSTL::vector_Affine3d poses;
+  EigenSTL::vector_Isometry3d poses;
   std::vector<shapes::ShapeConstPtr> shapes;
   for (unsigned int i = 0; i < 10000; i++)
   {
-    poses.push_back(Eigen::Affine3d::Identity());
+    poses.push_back(Eigen::Isometry3d::Identity());
     shapes.push_back(shapes::ShapeConstPtr(new shapes::Box(.01, .01, .01)));
   }
   ros::WallTime start = ros::WallTime::now();
@@ -508,14 +508,14 @@ TEST_F(FclCollisionDetectionTester, MoveMesh)
   kstate1.setToDefaultValues();
   kstate1.update();
 
-  Eigen::Affine3d kinect_pose;
+  Eigen::Isometry3d kinect_pose;
   kinect_pose.setIdentity();
   shapes::ShapePtr kinect_shape;
   kinect_shape.reset(shapes::createMeshFromResource(kinect_dae_resource_));
 
   cworld_->getWorld()->addToObject("kinect", kinect_shape, kinect_pose);
 
-  Eigen::Affine3d np;
+  Eigen::Isometry3d np;
   for (unsigned int i = 0; i < 5; i++)
   {
     np = Eigen::Translation3d(i * .001, i * .001, i * .001) * Eigen::Quaterniond::Identity();
@@ -537,7 +537,7 @@ TEST_F(FclCollisionDetectionTester, TestChangingShapeSize)
 
   ASSERT_FALSE(res1.collision);
 
-  EigenSTL::vector_Affine3d poses;
+  EigenSTL::vector_Isometry3d poses;
   std::vector<shapes::ShapeConstPtr> shapes;
   for (unsigned int i = 0; i < 5; i++)
   {
@@ -545,7 +545,7 @@ TEST_F(FclCollisionDetectionTester, TestChangingShapeSize)
     shapes.clear();
     poses.clear();
     shapes.push_back(shapes::ShapeConstPtr(new shapes::Box(1 + i * .0001, 1 + i * .0001, 1 + i * .0001)));
-    poses.push_back(Eigen::Affine3d::Identity());
+    poses.push_back(Eigen::Isometry3d::Identity());
     cworld_->getWorld()->addToObject("shape", shapes, poses);
     collision_detection::CollisionRequest req;
     collision_detection::CollisionResult res;
@@ -553,7 +553,7 @@ TEST_F(FclCollisionDetectionTester, TestChangingShapeSize)
     ASSERT_TRUE(res.collision);
   }
 
-  Eigen::Affine3d kinect_pose = Eigen::Affine3d::Identity();
+  Eigen::Isometry3d kinect_pose = Eigen::Isometry3d::Identity();
   shapes::ShapePtr kinect_shape;
   kinect_shape.reset(shapes::createMeshFromResource(kinect_dae_resource_));
   cworld_->getWorld()->addToObject("kinect", kinect_shape, kinect_pose);
@@ -567,7 +567,7 @@ TEST_F(FclCollisionDetectionTester, TestChangingShapeSize)
     shapes.clear();
     poses.clear();
     shapes.push_back(shapes::ShapeConstPtr(new shapes::Box(1 + i * .0001, 1 + i * .0001, 1 + i * .0001)));
-    poses.push_back(Eigen::Affine3d::Identity());
+    poses.push_back(Eigen::Isometry3d::Identity());
     cworld_->getWorld()->addToObject("shape", shapes, poses);
     collision_detection::CollisionRequest req;
     collision_detection::CollisionResult res;
